@@ -1,7 +1,8 @@
 import React from "react";
 import './sign-in.styles.scss';
-import FormInput from '../form-input/form-input.component';
 import CustomButton from '../custom-button/custom-button.component';
+import FormInput from '../form-input/form-input.component';
+import { auth, signInWithGoogle } from '../../firebase/firebase.utils';
 
 class SignIn extends React.Component {
     constructor(props) {
@@ -11,9 +12,19 @@ class SignIn extends React.Component {
             password:''
         }
     }
-    handleSubmit = (event) => {
+    handleSubmit = async (event) => {
 
         event.preventDefault();
+
+        const {email, password } = this.state;
+        try {
+            await auth.signInWithEmailAndPassword(email,password);
+            this.setState( {email: '', password: ''} )
+        }
+        catch(error) {
+            console.error(error);
+        }
+
         this.setState( {email:'', password:''});
 
     }
@@ -34,7 +45,11 @@ class SignIn extends React.Component {
                 <form onSubmit= { this.handleSubmit }>
                     <FormInput name='email' type='email' handleChange={ this.handleChange } value={this.state.email} label='Email' required></FormInput>
                     <FormInput name='password' type='password' handleChange={ this.handleChange } value={this.state.password}  label='Password' required></FormInput>
-                    <CustomButton type='submit'> Sign In </CustomButton>                 
+                    <div className='buttons'>
+                        <CustomButton type='submit'> Sign In </CustomButton> 
+                        <CustomButton isGoogleSignIn = {true} onClick={ signInWithGoogle }> Sign in with Google </CustomButton>   
+                        {/* <CustomButtonDene deneme='deneme value' onClick={ signInWithGoogle }> CustomButtonDene </CustomButtonDene>                */}
+                    </div>
                 </form>
             </div>
         )
